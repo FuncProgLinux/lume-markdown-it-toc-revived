@@ -1,8 +1,59 @@
 {
-  "tasks": {
-    "dev": "deno run --watch --allow-net main.ts"
-  },
-  "imports": {
-    "@std/assert": "jsr:@std/assert@1"
-  }
+    "name": "@funcproglinux/markdown-it-toc-revived",
+    "version": "1.0.0",
+    "license": "AGPL-3.0-or-later",
+    "exports": "./mod.ts",
+    "nodeModulesDir": "auto",
+    "imports": {
+        "@std/assert": "jsr:@std/assert@^1",
+        "@std/html": "jsr:@std/html@^1.0.7",
+        "@types/markdown-it": "npm:@types/markdown-it@^14.1.2",
+
+        "markdown-it": "npm:markdown-it@^14.3.0",
+        "markdown-it-anchor": "npm:markdown-it-anchor@^9.2.1"
+    },
+    "publish": {
+        "exclude": [
+            "mod_test.ts",
+            "./.repo-assets/"
+        ]
+    },
+    "fmt": {
+        "useTabs": false,
+        "lineWidth": 80,
+        "indentWidth": 4,
+        "semiColons": true,
+        "proseWrap": "always",
+        "exclude": [
+            "node_modules"
+        ]
+    },
+    "lint": {
+        "rules": {
+            "tags": ["recommended"],
+            "include": [
+                "no-explicit-any",
+                "ban-untagged-todo",
+                "ban-untagged-ignore",
+                "eqeqeq",
+                "explicit-function-return-type",
+                "no-console",
+                "guard-for-in",
+                "no-const-assign",
+                "no-eval",
+                "no-self-compare",
+                "no-throw-literal",
+                "no-undef",
+                "triple-slash-reference",
+                "single-var-declarator",
+                "no-slow-types"
+            ]
+        }
+    },
+    "lock": true,
+    "allowScripts": {
+        "deny": [
+            "npm:*"
+        ]
+    }
 }
