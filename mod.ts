@@ -162,9 +162,6 @@ export const toc = (options: TocOptions = {}): TocPlugin => {
                 _endLine: number,
                 silent: boolean,
             ): boolean => {
-                if (state.sCount[startLine] - state.blkIndent >= 4) {
-                    return false;
-                }
                 const pos: number = state.bMarks[startLine] +
                     state.tShift[startLine];
                 const line: string = state.src.slice(
