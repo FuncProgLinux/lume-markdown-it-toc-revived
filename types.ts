@@ -109,7 +109,7 @@ export interface Token {
     map: [number, number] | null;
     children: Token[] | null;
     content: string;
-    attrGet?(name: string): string | null;
+    attrGet?(name: string): string | number | null;
 }
 
 /**

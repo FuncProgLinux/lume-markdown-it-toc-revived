@@ -100,7 +100,7 @@ export const buildTree = (tokens: Token[], o: Resolved): TocNode[] => {
 
         // Reuse the id markdown-it-anchor (or markdown-it-attrs) already produced,
         // otherwise links break on duplicate headings.
-        let slug: string | null = token.attrGet?.("id") ?? null;
+        let slug: string | null = token.attrGet?.("id")?.toString() ?? null;
         if (!slug) {
             slug = o.slugify(text);
             const n: number = seen.get(slug) ?? 0;
