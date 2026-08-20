@@ -1,11 +1,11 @@
 {
   "version": "5",
   "specifiers": {
-    "jsr:@std/assert@1": "1.0.19",
+    "jsr:@std/assert@^1.0.19": "1.0.19",
     "jsr:@std/html@^1.0.7": "1.0.7",
     "jsr:@std/internal@^1.0.12": "1.0.14",
-    "npm:@types/markdown-it@^14.1.2": "14.1.2",
-    "npm:markdown-it-anchor@^9.2.1": "9.2.1_@types+markdown-it@14.1.2_markdown-it@14.3.0",
+    "npm:@types/markdown-it@^14.2.0": "14.2.0",
+    "npm:markdown-it-anchor@^9.2.1": "9.2.1_@types+markdown-it@14.2.0_markdown-it@14.3.0",
     "npm:markdown-it@^14.3.0": "14.3.0"
   },
   "jsr": {
@@ -26,8 +26,8 @@
     "@types/linkify-it@5.0.0": {
       "integrity": "sha512-sVDA58zAw4eWAffKOaQH5/5j3XeayukzDk+ewSsnv3p4yJEZHCCzMDiZM8e0OUrRvmpGZ85jf4yDHkHsgBNr9Q=="
     },
-    "@types/markdown-it@14.1.2": {
-      "integrity": "sha512-promo4eFwuiW+TfGxhi+0x3czqTYJkG8qB17ZUJiVF10Xm7NLVRSLUsfRTU/6h1e24VvRnXCx+hG7li58lkzog==",
+    "@types/markdown-it@14.2.0": {
+      "integrity": "sha512-NoQ2yGlLWj4wpxMs+TYmRKk3thDrQ97agr7sFqfLsAlvoS8SNQuTrlObhFqG9iugdTtgOE9jpJ6FNM4ZGsa5xQ==",
       "dependencies": [
         "@types/linkify-it",
         "@types/mdurl"
@@ -48,7 +48,7 @@
         "uc.micro"
       ]
     },
-    "markdown-it-anchor@9.2.1_@types+markdown-it@14.1.2_markdown-it@14.3.0": {
+    "markdown-it-anchor@9.2.1_@types+markdown-it@14.2.0_markdown-it@14.3.0": {
       "integrity": "sha512-p6APiLJDFAW2GEvaavDvhIBn7jrX2jLv77NkBGgNacFTurbORYc4pyYySg/mI6mpR6cHQuAtzKtmqgQr4K8dsQ==",
       "dependencies": [
         "@types/markdown-it",
@@ -79,9 +79,9 @@
   },
   "workspace": {
     "dependencies": [
-      "jsr:@std/assert@1",
+      "jsr:@std/assert@^1.0.19",
       "jsr:@std/html@^1.0.7",
-      "npm:@types/markdown-it@^14.1.2",
+      "npm:@types/markdown-it@^14.2.0",
       "npm:markdown-it-anchor@^9.2.1",
       "npm:markdown-it@^14.3.0"
     ]
