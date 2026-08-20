@@ -8,9 +8,25 @@ import {
     Token,
 } from "./types.ts";
 
+/**
+ * @internal
+ * Anchored placeholder pattern, tested against the whole trimmed line.
+ * Should match `${toc}`, `[toc]`, `[[toc]]` and `[[_toc_]]` case insensitive.
+ * Same list as {@link TocOptions.placeholder}
+ */
 const DEFAULT_PLACEHOLDER: RegExp = /^(\$\{toc\}|\[\[?_?toc_?\]?\])$/i;
 
-/** Fallback slugifier. Preserves Unicode via percent-encoding. */
+/**
+ * Fallback slugifier. Also exported so custom `slugify` options can wrap it.
+ * @param {string} text - Heading text
+ * @returns {string} URL safe fragment without leading hashes `#`
+ *
+ * @example
+ * ```ts
+ * defaultSlugify("    Hello   World    "); // Returns: "hello-world"
+ * defaultSlugify("Ñandú");             // "%C3%B1and%C3%BA"
+ * ```
+ */
 export const defaultSlugify = (text: string): string => {
     return encodeURIComponent(
         text.trim().toLowerCase().split(/\s+/).join("-").replace(
@@ -34,6 +50,16 @@ interface Resolved {
     format?: (text: string, escape: (s: string) => string) => string;
 }
 
+/**
+ * @internal
+ * Applies defaults and validates. Throws on invalid input, so `toc()` fails
+ * fast at plugin creation.
+ *
+ * @param {TocOptions} o - Plugin options. By default it's an empty object.
+ * @returns {Resolved} Options with all defaults applied.
+ * @throws {TypeError} if `level` is neither `number` nor `number[]`, or if
+ * `listType` is not `"ol"` or `"ul"`
+ */
 const resolve = (o: TocOptions = {}): Resolved => {
     const level: number | readonly number[] = o.level ?? 1;
     if (typeof level !== "number" && !Array.isArray(level)) {
@@ -68,6 +94,16 @@ const resolve = (o: TocOptions = {}): Resolved => {
     };
 };
 
+/**
+ * @internal
+ * Extracts visible text from a heading's inline children. Only `text` and
+ * `code_inline` survive, everything else gets ignored. This is internal API
+ * behaviour not exposed to the user, it's documented at the README as a
+ * pitfall.
+ *
+ * @param inline
+ * @returns
+ */
 const headingText = (inline: Token): string => {
     let out: string = "";
     for (const child of inline.children ?? []) {
@@ -75,12 +111,28 @@ const headingText = (inline: Token): string => {
             out += child.content;
         }
     }
-    // The original markdown-it-toc-done-right returns this with a leading space
-    // This should fix it without introducing regressions.
+
     return out.trim();
 };
 
-/** Walks the token stream and builds the nested heading tree. */
+/**
+ * Walks the block token stream and builds a nested heading tree, this is used
+ * at render time so anchor plugins may run in any registration order.
+ *
+ * This assumes `markdown-it-anchor` and `markdown-it-attrs` may already
+ * have set an `id` HTML attribute, such attribute is reused verbatim so
+ * existing links don't break.
+ *
+ * Duplicated headings only get `-1`, `-2` suffixes when this plugin generates
+ * the slug itself. This is also documented as a pitfall in the README.
+ *
+ * @param {Token[]} tokens - Render time token stream (all block tokens)
+ * @param {Resolved} o - Resolved options from `resolve()` internal
+ * @returns {TocNode[]} Root nodes, one per each top level selected heading
+ *
+ * @see {@link https://github.com/nagaozen/markdown-it-toc-done-right} for the
+ * original API this mimics.
+ */
 export const buildTree = (tokens: Token[], o: Resolved): TocNode[] => {
     const seen: Map<string, number> = new Map<string, number>();
     const roots: TocNode[] = [];
@@ -120,10 +172,18 @@ export const buildTree = (tokens: Token[], o: Resolved): TocNode[] => {
     return roots;
 };
 
+/**
+ * @internal
+ * TODO(FuncProgLinux): Document this
+ */
 const attr = (name: string, value: string | undefined): string => {
     return value ? ` ${name}="${escape(value)}"` : "";
 };
 
+/**
+ * @internal
+ * TODO(FuncProgLinux): Document this
+ */
 const renderList = (nodes: TocNode[], o: Resolved): string => {
     if (nodes.length === 0) return "";
     let out: string = `<${o.listType}${attr("class", o.listClass)}>`;
@@ -142,10 +202,34 @@ const renderList = (nodes: TocNode[], o: Resolved): string => {
 };
 
 /**
- * Creates the markdown-it plugin. The tree is built at render time, so the
- * plugin works regardless of registration order relative to markdown-it-anchor.
+ * Creates the `markdown-it` plugin, it's accepted by `md.use()` and by Lume's
+ * `markdown.plugins` array since v3.3.1. It's a factory which changes the way
+ * it should be used.
  *
- * Also writes the tree to `env.toc` when `env` is an object.
+ * This factory is idempotent, it should be able to tolerate a second `use()`
+ * without installing duplicated rules. The tree is rebuilt per placeholder at
+ * render time so registration order relative to `markdown-it-anchor` shouldn't
+ * matter.
+ *
+ * When `env` is an object, the tree is also written to `env.toc`
+ * as `TocNode[]`
+ *
+ * @param {TocOptions} options - Plugin options. Invalid values throw errors
+ * @returns {TocPlugin} Plugin for `md.use()` and Lume v3.3.1
+ * @throws {TypeError} See `resolve()` at the internal API.
+ *
+ * @example
+ * ```ts
+ * // Markdown: `[[toc]]` alone on a line.
+ * md.use(toc({ level: [2, 3], listType: "ul" }));
+ * ```
+ *
+ * @example
+ * ```ts
+ * const env = {};
+ * md.renderer.render(md.parse(src, env), {}, env);
+ * env.toc; // TocNode[]
+ * ```
  */
 export const toc = (options: TocOptions = {}): TocPlugin => {
     const o: Resolved = resolve(options);

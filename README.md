@@ -1,5 +1,7 @@
 # markdown-it-toc-revived
 
+[![JSR](https://jsr.io/badges/@funcproglinux/markdown-it-toc-revived)](https://jsr.io/@funcproglinux/markdown-it-toc-revived)
+
 Table of Contents plugin reworked using the Deno stack to mimic the same plugin
 published [here](https://github.com/nagaozen/markdown-it-toc-done-right). Which
 I need for [my Lume site](https://urutau-ltd.org/).
@@ -42,7 +44,7 @@ Usage in Markdown:
 Placeholders: `${toc}`, `[toc]`, `[[toc]]`, `[[_toc_]]` (case-insensitive),
 alone on a line.
 
-Lume 3.3.0 retyped `markdown.plugins` from `unknown[]` to
+Lume 3.3.1 retyped `markdown.plugins` from `unknown[]` to
 `(MarkdownItPlugin | [MarkdownItPlugin, unknown[]])[]`, which breaks the
 `[plugin, {options}]` tuple in two separate ways:
 

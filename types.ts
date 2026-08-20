@@ -30,7 +30,7 @@ export interface TocNode {
 export interface TocOptions {
     /**
      * Anchored regexp tested against the trimmed line.
-     * @default: `${toc}`, `[toc]`, `[[toc]]`, `[[_toc_]]`.
+     * Defaults to matching `${toc}`, `[toc]`, `[[toc]]`, `[[_toc_]]`.
      * @type {RegExp | undefined}
      */
     placeholder?: RegExp | undefined;
@@ -79,52 +79,145 @@ export interface TocOptions {
      */
     containerId?: string | undefined;
 
-    // Accessible names, too lazy to document them all.
-    // TODO(FuncProgLinux): Document these!
+    /**
+     * `aria-label` attribute for the container element, for assistive tech.
+     * This is omitted when unset.
+     * @type {string | undefined}
+     */
     ariaLabel?: string;
+
+    /**
+     * Class for the `<ol>` / `<ul>` list HTML element.
+     * This is omitted when unset.
+     * @type {string | undefined}
+     */
     listClass?: string;
+
+    /**
+     * Class for every `<li>` element.
+     * This is omitted when unset.
+     * @type {string | undefined}
+     */
     itemClass?: string;
+
+    /**
+     * Class for every `<a>` element.
+     * This is omitted when unset.
+     * @type {string | undefined}
+     */
     linkClass?: string;
 
     /**
      * Builds the link label. The return value is inserted **raw**: escape it
-     * yourself with the provided helper or you own the XSS, your choice, hacker.
+     * yourself with the provided helper or you own the XSS, your choice, hacker
+     *
+     * @example
+     * ```ts
+     * format: (text, escape) => escape(text) + " <em>(top)</em>"
+     * ```
      */
     format?: (text: string, escape: (s: string) => string) => string;
 }
 
-// HACK:
-// Lazy asf subset of markdown-it tokens. It should kind of be compatible
-// with the API made by trial and error.
-
 /**
- * @internal
- * NOT MEANT TO BE USED OUTSIDE THE PLUGIN SOURCE!
- * TODO(FuncProgLinux): Document internal API!
+ * Minimal subset of the markdown-it `Token` surface this plugin reads.
  */
 export interface Token {
+    /**
+     * Token type, e.g: `"heading_open"`, `"inline"`, `"text"`.
+     * @type {string}
+     */
     type: string;
+
+    /**
+     * HTML tag, e.g `"h2"` for heading tokens.
+     * @type {string}
+     */
     tag: string;
+
+    /**
+     * Original source markup, placeholder line for `toc` tokens
+     * @type {string}
+     */
     markup: string;
+
+    /**
+     * Line range in the source this particular token covers
+     * @type {[number, number] | null}
+     */
     map: [number, number] | null;
+
+    /**
+     * Nested inline tokens, set on `"inline"` tokens (duh)
+     * @type {Token[] | null}
+     */
     children: Token[] | null;
+
+    /**
+     * Raw text content for leaf tokens
+     * @type {string}
+     */
     content: string;
+
+    /**
+     * Read an attribute an earlier plugin set, e.g: `id`.
+     * @param {string} name
+     */
     attrGet?(name: string): string | number | null;
 }
 
 /**
- * @internal
- * NOT MEANT TO BE USED OUTSIDE THE PLUGIN SOURCE!
- * TODO(FuncProgLinux): Document internal API!
+ * Minimal subset of the markdown-it block `State` surface this plugin reads.
  */
 export interface StateBlock {
+    /**
+     * Full source text
+     * @type {string}
+     */
     src: string;
+
+    /**
+     * Line start offsets in `src`
+     * @type {number[]}
+     */
     bMarks: number[];
+
+    /**
+     * Line end offsets in `src`
+     * @type {number[]}
+     */
     eMarks: number[];
+
+    /**
+     * Leading whitespace (tabs expanded) per line
+     * @type {number[]}
+     */
     tShift: number[];
+
+    /**
+     * Indent counts per line
+     * @type {number[]}
+     */
     sCount: number[];
+
+    /**
+     * Block indent
+     * @type {number}
+     */
     blkIndent: number;
+
+    /**
+     * Current line index, write to consume lines
+     * @type {number}
+     */
     line: number;
+
+    /**
+     * Emit a token into the stream
+     * @param {string} type
+     * @param {string} tag
+     * @param {number} nesting
+     */
     push(type: string, tag: string, nesting: number): Token;
 }
 
