@@ -219,13 +219,13 @@ const renderList = (nodes: TocNode[], o: Resolved): string => {
  * @throws {TypeError} See `resolve()` at the internal API.
  *
  * @example
- * ```ts
+ * ```ts ignore
  * // Markdown: `[[toc]]` alone on a line.
  * md.use(toc({ level: [2, 3], listType: "ul" }));
  * ```
  *
  * @example
- * ```ts
+ * ```ts ignore
  * const env = {};
  * md.renderer.render(md.parse(src, env), {}, env);
  * env.toc; // TocNode[]

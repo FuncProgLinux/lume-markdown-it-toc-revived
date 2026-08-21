@@ -5,13 +5,12 @@ import {
     assertStringIncludes,
     assertThrows,
 } from "@std/assert";
-import MarkdownIt from "markdown-it";
+import MarkdownIt, { type MarkdownIt as MD } from "markdown-it";
 import anchor from "markdown-it-anchor";
 import { defaultSlugify, toc } from "../mod.ts";
 import { TocNode, TocOptions } from "../types.ts";
 
-const mk = (o?: TocOptions): MarkdownIt =>
-    new MarkdownIt({ html: true }).use(toc(o));
+const mk = (o?: TocOptions): MD => new MarkdownIt({ html: true }).use(toc(o));
 
 Deno.test("placeholder variants", () => {
     for (const p of ["${toc}", "[[toc]]", "[toc]", "[[_toc_]]", "[_TOC_]"]) {
@@ -57,21 +56,25 @@ Deno.test("level number is a minimum", () => {
 });
 
 Deno.test("reuses markdown-it-anchor ids even when registered first", () => {
-    const md: MarkdownIt = new MarkdownIt()
+    const md: MD = new MarkdownIt()
         .use(toc())
         .use(anchor, { slugify: (s: string) => "x-" + s.toLowerCase() });
-    const html = md.render("[[toc]]\n\n# Hello\n");
+    const html: string = md.render("[[toc]]\n\n# Hello\n");
     assertMatch(html, /href="#x-hello"/);
     assertMatch(html, /<h1 id="x-hello"/);
 });
 
 Deno.test("duplicate headings: hrefs match anchor ids", () => {
-    const md: MarkdownIt = new MarkdownIt().use(toc()).use(
+    const md: MD = new MarkdownIt().use(toc()).use(
         anchor,
     );
     const html: string = md.render("[[toc]]\n\n# A\n\n# A\n");
-    const ids = [...html.matchAll(/<h1 id="([^"]+)"/g)].map((m) => m[1]);
-    const hrefs = [...html.matchAll(/href="#([^"]+)"/g)].map((m) => m[1]);
+    const ids: string[] = [...html.matchAll(/<h1 id="([^"]+)"/g)].map((m) =>
+        m[1]
+    );
+    const hrefs: string[] = [...html.matchAll(/href="#([^"]+)"/g)].map((m) =>
+        m[1]
+    );
     assertEquals(hrefs, ids);
 });
 
@@ -137,7 +140,7 @@ Deno.test("two placeholders both render", () => {
 });
 
 Deno.test("reentrancy: parse A, parse B, render A", () => {
-    const md: MarkdownIt = mk();
+    const md: MD = mk();
     const a = md.parse("[[toc]]\n\n# AAA\n", {});
     md.parse("[[toc]]\n\n# BBB\n", {});
     assertMatch(md.renderer.render(a, md.options, {}), /AAA/);
@@ -181,7 +184,7 @@ Deno.test("defaultSlugify", () => {
 });
 
 Deno.test("permalink injection does not leak whitespace into labels", () => {
-    const md: MarkdownIt = new MarkdownIt()
+    const md: MD = new MarkdownIt()
         .use(toc())
         .use(anchor, {
             permalink: anchor.permalink.linkInsideHeader({
