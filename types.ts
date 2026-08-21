@@ -112,8 +112,8 @@ export interface TocOptions {
      * yourself with the provided helper or you own the XSS, your choice, hacker
      *
      * @example
-     * ```ts
-     * format: (text, escape) => escape(text) + " <em>(top)</em>"
+     * ```ts ignore
+     * format: (text , escape) => escape(text) + " <em>(top)</em>"
      * ```
      */
     format?: (text: string, escape: (s: string) => string) => string;

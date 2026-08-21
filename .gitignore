@@ -12,3 +12,6 @@ coverage/
 
 # Node Modules dir
 node_modules/
+
+# Test snapshots
+tests/__snapshots__/

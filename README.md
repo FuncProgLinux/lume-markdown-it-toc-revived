@@ -18,6 +18,9 @@ I need for [my Lume site](https://urutau-ltd.org/).
 [Lume TOC](https://lume.land/plugins/toc/) was beyond unusable for me and I'd
 rather maintain a fork to keep doing things my way.
 
+Also tests are Deno runtime dependent and the build system doesn't use deno
+tasks but `maak` instead. You'll need either `nix` or `guix` for that.
+
 ### I don't care, I still want to use it
 
 Install it via JSR with:
